@@ -4,4 +4,9 @@
     <string name="search_caption">Listen to your favorite\n songs from Youtube</string>
     <string name="search_text">Search Music Title, Artist, Movie etc.</string>
     <string name="title_activity_itunes_search">ItunesSearchActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
+    <string name="favorites">Favorites</string>
 </resources>

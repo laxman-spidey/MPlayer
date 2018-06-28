@@ -50,12 +50,13 @@
                         android:textColor="@color/white"
                         android:textSize="24sp" />
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/favoritesIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_alignParentRight="true"
                         android:gravity="center_vertical"
+                        android:background="@android:color/transparent"
                         android:src="@mipmap/favorite" />
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
