@@ -10,8 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.weavedin.music.app.RESTServices.ITunesService;
 import com.weavedin.music.app.dummy.DummyContent;
 import com.weavedin.music.app.dummy.DummyContent.DummyItem;
+import com.weavedin.music.app.models.Track;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -26,6 +31,10 @@ public class TracksFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private List<Track> tracks = new ArrayList<>();
+    RecyclerView recyclerView;
+    MyTrackRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -61,15 +70,35 @@ public class TracksFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyTrackRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+
+            recyclerView = (RecyclerView) view;
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+//            if (mColumnCount <= 1) {
+//                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+//            } else {
+//                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+//            }
+
+            adapter = new MyTrackRecyclerViewAdapter(tracks, getContext(), mListener);
+            recyclerView.setAdapter(adapter);
         }
+        getTracks();
+
         return view;
+    }
+
+
+    public void getTracks() {
+        ITunesService.search("jack", response -> {
+            if (response.isOkay) {
+                List<Track> result = (List<Track>) response.data;
+                if (result != null && result.size() > 0) {
+                    tracks.addAll(result);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+        });
     }
 
 
@@ -102,6 +131,6 @@ public class TracksFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Track item);
     }
 }

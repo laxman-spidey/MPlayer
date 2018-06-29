@@ -6,8 +6,11 @@
     android:name="com.weavedin.music.app.TracksFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="4dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".TracksFragment"
+
+    android:padding="8dp"
     tools:listitem="@layout/track_list_item" />

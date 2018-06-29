@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 
+import com.weavedin.music.app.RESTServices.ITunesService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +45,19 @@ public class ItunesSearchActivityFragment extends Fragment {
         });
         ImageButton favoritesButton = view.findViewById(R.id.favoritesIcon);
         favoritesButton.setOnClickListener(v -> onFavoritesIconClicked(v));
+
         return view;
     }
 
     public void onFavoritesIconClicked(View view) {
         Intent intent = new Intent(getContext(), FavoritesActivity.class);
         startActivity(intent);
+    }
+
+
+    public void searchItunesTracks(String query) {
+        ITunesService.search(query, response -> {
+
+        });
     }
 }

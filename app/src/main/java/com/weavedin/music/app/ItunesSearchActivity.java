@@ -6,9 +6,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
-public class ItunesSearchActivity extends AppCompatActivity {
+import com.weavedin.music.app.RESTServices.ITunesService;
+import com.weavedin.music.app.dummy.DummyContent;
+import com.weavedin.music.app.models.Track;
+
+public class ItunesSearchActivity extends AppCompatActivity implements TracksFragment.OnListFragmentInteractionListener {
 
 
     @Override
@@ -18,4 +23,9 @@ public class ItunesSearchActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onListFragmentInteraction(Track item) {
+
+    }
 }

@@ -1,13 +1,19 @@
 package com.weavedin.music.app;
 
+import android.content.Context;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.weavedin.music.app.TracksFragment.OnListFragmentInteractionListener;
 import com.weavedin.music.app.dummy.DummyContent.DummyItem;
+import com.weavedin.music.app.models.Track;
 
 import java.util.List;
 
@@ -18,12 +24,14 @@ import java.util.List;
  */
 public class MyTrackRecyclerViewAdapter extends RecyclerView.Adapter<MyTrackRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Track> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private Context context;
 
-    public MyTrackRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyTrackRecyclerViewAdapter(List<Track> items, Context context, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
+        this.context = context;
     }
 
     @Override
@@ -36,9 +44,7 @@ public class MyTrackRecyclerViewAdapter extends RecyclerView.Adapter<MyTrackRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
-
+        holder.setData(mValues.get(position));
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,25 +59,49 @@ public class MyTrackRecyclerViewAdapter extends RecyclerView.Adapter<MyTrackRecy
 
     @Override
     public int getItemCount() {
+        Log.i("TAG", "track size - " + mValues.size());
         return mValues.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public final ImageView albumArt;
+        public final TextView trackName;
+        public final TextView artistName;
+        public final TextView albumName;
+
+        //        public final TextView mContentView;
+        public Track mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+
+            albumArt = view.findViewById(R.id.albumArt);
+            trackName = view.findViewById(R.id.trackName);
+            artistName = view.findViewById(R.id.artistName);
+            albumName = view.findViewById(R.id.albumName);
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+        public void setData(Track track) {
+
+            albumName.setText(track.collectionName);
+            trackName.setText(track.trackName);
+            artistName.setText(track.artistName);
+            Glide.with(getContext())
+                    .load(track.artworkUrl60)
+//                    .centerCrop()
+//                    .placeholder(R.drawable.loading_spinner)
+                    .into(albumArt);
+
         }
+//        @Override
+//        public String toString() {
+//            return super.toString() + " '" + mContentView.getText() + "'";
+//        }
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

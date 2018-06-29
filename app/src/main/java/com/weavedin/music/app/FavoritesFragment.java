@@ -4,12 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toolbar;
+
+import com.weavedin.music.app.RESTServices.ITunesService;
 
 
 public class FavoritesFragment extends Fragment {
@@ -27,6 +30,7 @@ public class FavoritesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         ImageButton backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> onBackButtonClicked(v));
+
         return view;
     }
 
