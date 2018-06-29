@@ -10,12 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.TextView;
-
-import com.weavedin.music.app.RESTServices.ITunesService;
-import com.weavedin.music.app.models.Track;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,34 +24,34 @@ import java.util.List;
 public class ItunesSearchActivityFragment extends Fragment {
 
     AppCompatAutoCompleteTextView searchBox;
+    ArrayAdapter<String> historyAdapter;
     OnFragmentInteractionListener mListener;
 
     public ItunesSearchActivityFragment() {
-        dummyHistory.add("Silicon Valley");
-        dummyHistory.add("Evil morty");
-        dummyHistory.add("Zombie");
 
     }
 
-    List<String> dummyHistory = new ArrayList<>();
+    List<String> searchHistory = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_itunes_search, container, false);
         searchBox = view.findViewById(R.id.searchEditText);
-        ArrayAdapter<String> historyAdapter = new ArrayAdapter<String>(getContext(),R.layout.history_item_view);
-        historyAdapter.addAll(dummyHistory);
-        searchBox.setAdapter(historyAdapter);
-//        searchBox.showDropDown();
-        searchBox.setOnClickListener(v->{
-            searchBox.showDropDown();
-        });
+
+        initializeHistory();
+
         ImageButton favoritesButton = view.findViewById(R.id.favoritesIcon);
         favoritesButton.setOnClickListener(v -> onFavoritesIconClicked(v));
+
+        //When user presses enter in SearchBox, send query to activity
+        // and store it using history service
         searchBox.setOnEditorActionListener((v, actionId, event) -> {
             if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                searchItunesTracks(searchBox.getText().toString());
+                String query = searchBox.getText().toString();
+                searchItunesTracks(query);
+                historyAdapter.add(query);
+                HistoryService.getInstance(getContext()).insert(query);
             }
             return false;
         });
@@ -65,12 +63,26 @@ public class ItunesSearchActivityFragment extends Fragment {
         startActivity(intent);
     }
 
+    public void initializeHistory() {
+
+        historyAdapter = new ArrayAdapter<>(getContext(), R.layout.history_item_view);
+        historyAdapter.addAll(HistoryService.getInstance(getContext()).getHistory());
+        historyAdapter.addAll(searchHistory);
+        searchBox.setAdapter(historyAdapter);
+        searchBox.setOnClickListener(v-> searchBox.showDropDown());
+        searchBox.setOnItemClickListener((parent, view, position, id) -> {
+            String query = (String)parent.getItemAtPosition(position);
+            searchItunesTracks(query);
+        });
+    }
 
     public void searchItunesTracks(String query) {
         mListener.onFragmentInteraction(query);
     }
 
     public void onAttach(Context context) {
+
+
         super.onAttach(context);
         if (context instanceof TracksFragment.OnListFragmentInteractionListener) {
             mListener = (ItunesSearchActivityFragment.OnFragmentInteractionListener) context;
