@@ -13,7 +13,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         int SPLASH_TIMEOUT_SHORT = 2000;
             new Handler().postDelayed(() -> {
-                Intent intent = new Intent(SplashScreen.this, SearchActivity.class);
+                Intent intent = new Intent(SplashScreen.this, WelcomeActivity.class);
                 startActivity(intent);
                 finish();
             }, SPLASH_TIMEOUT_SHORT);

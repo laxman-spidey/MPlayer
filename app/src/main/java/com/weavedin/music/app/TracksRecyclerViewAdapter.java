@@ -1,7 +1,6 @@
 package com.weavedin.music.app;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,13 +21,13 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyTrackRecyclerViewAdapter extends RecyclerView.Adapter<MyTrackRecyclerViewAdapter.ViewHolder> {
+public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecyclerViewAdapter.ViewHolder> {
 
     private final List<Track> mValues;
     private final OnListFragmentInteractionListener mListener;
     private Context context;
 
-    public MyTrackRecyclerViewAdapter(List<Track> items, Context context, OnListFragmentInteractionListener listener) {
+    public TracksRecyclerViewAdapter(List<Track> items, Context context, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
         this.context = context;

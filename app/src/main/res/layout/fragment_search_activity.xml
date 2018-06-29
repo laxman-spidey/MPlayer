@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ItunesSearchActivityFragment"
-    tools:showIn="@layout/activity_itunes_search">
+    tools:context=".SearchBarFragment"
+    tools:showIn="@layout/activity_search">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/allSongsLabel"
                 android:layout_alignTop="@+id/allSongsLabel"
-                android:text="24" />
+                android:text="0" />
 
         </RelativeLayout>
     </RelativeLayout>

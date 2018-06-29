@@ -3,16 +3,12 @@ package com.weavedin.music.app;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.weavedin.music.app.RESTServices.ITunesService;
-import com.weavedin.music.app.dummy.DummyContent;
-import com.weavedin.music.app.dummy.DummyContent.DummyItem;
 import com.weavedin.music.app.models.Track;
 
 import java.util.ArrayList;
@@ -34,7 +30,7 @@ public class TracksFragment extends Fragment {
 
     private List<Track> tracks = new ArrayList<>();
     RecyclerView recyclerView;
-    MyTrackRecyclerViewAdapter adapter;
+    TracksRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -79,7 +75,7 @@ public class TracksFragment extends Fragment {
 //                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
 //            }
 
-            adapter = new MyTrackRecyclerViewAdapter(tracks, getContext(), mListener);
+            adapter = new TracksRecyclerViewAdapter(tracks, getContext(), mListener);
             recyclerView.setAdapter(adapter);
         }
 

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tracksSearchFragment"
-    android:name="com.weavedin.music.app.ItunesSearchActivityFragment"
+    android:name="com.weavedin.music.app.SearchBarFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:layout="@layout/fragment_itunes_search" />
+    tools:layout="@layout/fragment_search_activity" />

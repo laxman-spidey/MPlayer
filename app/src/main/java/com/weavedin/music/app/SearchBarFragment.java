@@ -10,10 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +19,13 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ItunesSearchActivityFragment extends Fragment {
+public class SearchBarFragment extends Fragment {
 
     AppCompatAutoCompleteTextView searchBox;
     ArrayAdapter<String> historyAdapter;
     OnFragmentInteractionListener mListener;
 
-    public ItunesSearchActivityFragment() {
+    public SearchBarFragment() {
 
     }
 
@@ -36,7 +34,7 @@ public class ItunesSearchActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_itunes_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_activity, container, false);
         searchBox = view.findViewById(R.id.searchEditText);
 
         initializeHistory();
@@ -85,7 +83,7 @@ public class ItunesSearchActivityFragment extends Fragment {
 
         super.onAttach(context);
         if (context instanceof TracksFragment.OnListFragmentInteractionListener) {
-            mListener = (ItunesSearchActivityFragment.OnFragmentInteractionListener) context;
+            mListener = (SearchBarFragment.OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
