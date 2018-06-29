@@ -14,7 +14,7 @@ import com.weavedin.music.app.models.Track;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoritesService implements TracksFragment.OnListFragmentInteractionListener {
+public class FavoritesService {
 
     public final static String TAG = FavoritesService.class.getSimpleName();
 
@@ -58,9 +58,26 @@ public class FavoritesService implements TracksFragment.OnListFragmentInteractio
         return tracks;
     }
 
+    public void delete(Track track) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        String whereClause = TrackModel.COLUMN_TRACK_ID +"="+track.trackId;
+        db.delete(TracksDBHelper.TABLE_NAME, whereClause, null);
+    }
 
-    @Override
-    public void onListFragmentInteraction(Track item) {
+    public boolean isFavorite(Track track) {
+        boolean isFavorite = false;
+        String selectQuery = "SELECT  * FROM " + TracksDBHelper.TABLE_NAME
+                                + " WHERE "+ TrackModel.COLUMN_TRACK_ID +"="+track.trackId;
+
+        SQLiteDatabase db = helper.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.getCount() > 0) {
+            isFavorite = true;
+        } else {
+            isFavorite = false;
+        }
+        db.close();
+        return isFavorite;
 
     }
 }

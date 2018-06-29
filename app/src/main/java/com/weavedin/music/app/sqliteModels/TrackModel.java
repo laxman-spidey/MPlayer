@@ -15,6 +15,7 @@ public class TrackModel {
     public static final String COLUMN_ARTWORK_URL_100 = "artworkUrl100";
     public static final String COLUMN_COLLECTION_NAME = "collectionName";
     public static final String COLUMN_TRACK_TIME_MILLIS = "trackTimeMillis";
+    public static final String COLUMN_PREVIEW_URL = "previewUrl";
 
     public static ContentValues getInsertable(Track track) {
         ContentValues values = new ContentValues();
@@ -27,6 +28,7 @@ public class TrackModel {
         values.put(COLUMN_ARTWORK_URL_100, track.artworkUrl100);
         values.put(COLUMN_COLLECTION_NAME, track.collectionName);
         values.put(COLUMN_TRACK_TIME_MILLIS, track.trackTimeMillis);
+        values.put(COLUMN_PREVIEW_URL, track.previewUrl);
 
         return values;
     }
@@ -42,6 +44,7 @@ public class TrackModel {
         track.artworkUrl100 = cursor.getString(cursor.getColumnIndex(COLUMN_ARTWORK_URL_100));
         track.collectionName = cursor.getString(cursor.getColumnIndex(COLUMN_COLLECTION_NAME));
         track.trackTimeMillis = cursor.getString(cursor.getColumnIndex(COLUMN_TRACK_TIME_MILLIS));
+        track.previewUrl = cursor.getString(cursor.getColumnIndex(COLUMN_PREVIEW_URL));
 
         return track;
     }

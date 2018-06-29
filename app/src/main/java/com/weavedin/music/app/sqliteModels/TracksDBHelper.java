@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class TracksDBHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Tracks.db";
 
     public static final String TABLE_NAME  = "favorites";
@@ -22,7 +22,8 @@ public class TracksDBHelper extends SQLiteOpenHelper {
                     + TrackModel.COLUMN_ARTWORK_URL_60 + " TEXT,"
                     + TrackModel.COLUMN_ARTWORK_URL_100 + " TEXT,"
                     + TrackModel.COLUMN_COLLECTION_NAME + " TEXT,"
-                    + TrackModel.COLUMN_TRACK_TIME_MILLIS + " TEXT"
+                    + TrackModel.COLUMN_TRACK_TIME_MILLIS + " TEXT,"
+                    + TrackModel.COLUMN_PREVIEW_URL + " TEXT"
                     + ")";
 
     public TracksDBHelper(Context context) {

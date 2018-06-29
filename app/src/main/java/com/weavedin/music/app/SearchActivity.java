@@ -1,6 +1,7 @@
 package com.weavedin.music.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,13 +37,16 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tracksFragments.add(new TracksFragment());
         mSectionsPagerAdapter.notifyDataSetChanged();
-
+        getTracks("hello");
     }
 
 
     @Override
     public void onListFragmentInteraction(Track item) {
-        FavoritesService.getInstance(getContext()).insert(item);
+//        FavoritesService.getInstance(getContext()).insert(item);
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putExtra(PlayerActivity.TAG_TRACK, item.toString());
+        startActivity(intent);
     }
 
     @Override
