@@ -1,16 +1,21 @@
 package com.weavedin.music.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.weavedin.music.app.RESTServices.ITunesService;
+import com.weavedin.music.app.models.Track;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +26,7 @@ import java.util.List;
 public class ItunesSearchActivityFragment extends Fragment {
 
     AppCompatAutoCompleteTextView searchBox;
+    OnFragmentInteractionListener mListener;
 
     public ItunesSearchActivityFragment() {
         dummyHistory.add("Silicon Valley");
@@ -45,7 +51,12 @@ public class ItunesSearchActivityFragment extends Fragment {
         });
         ImageButton favoritesButton = view.findViewById(R.id.favoritesIcon);
         favoritesButton.setOnClickListener(v -> onFavoritesIconClicked(v));
-
+        searchBox.setOnEditorActionListener((v, actionId, event) -> {
+            if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                searchItunesTracks(searchBox.getText().toString());
+            }
+            return false;
+        });
         return view;
     }
 
@@ -56,8 +67,27 @@ public class ItunesSearchActivityFragment extends Fragment {
 
 
     public void searchItunesTracks(String query) {
-        ITunesService.search(query, response -> {
-
-        });
+        mListener.onFragmentInteraction(query);
     }
+
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof TracksFragment.OnListFragmentInteractionListener) {
+            mListener = (ItunesSearchActivityFragment.OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnListFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(String query);
+    }
+
 }

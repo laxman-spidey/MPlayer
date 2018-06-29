@@ -82,25 +82,15 @@ public class TracksFragment extends Fragment {
             adapter = new MyTrackRecyclerViewAdapter(tracks, getContext(), mListener);
             recyclerView.setAdapter(adapter);
         }
-        getTracks();
 
         return view;
     }
 
-
-    public void getTracks() {
-        ITunesService.search("jack", response -> {
-            if (response.isOkay) {
-                List<Track> result = (List<Track>) response.data;
-                if (result != null && result.size() > 0) {
-                    tracks.addAll(result);
-                    adapter.notifyDataSetChanged();
-                }
-            }
-
-        });
+    public void setTracks(List<Track> tracks) {
+        this.tracks.clear();
+        this.tracks.addAll(tracks);
+        this.adapter.notifyDataSetChanged();
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -119,18 +109,7 @@ public class TracksFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(Track item);
     }
 }
