@@ -27,6 +27,7 @@ import retrofit2.http.QueryMap;
 
 public class ITunesService {
 
+    public static int MAX_TRACK_COUNT = 50;
 
     public static void search(String query, ResponseListener listener) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -35,8 +36,9 @@ public class ITunesService {
         ITunesRetrofitService service = retrofit.create(ITunesRetrofitService.class);
         Map<String, String> data = new HashMap<>();
         data.put("term", query);
-        data.put("limit", String.valueOf(4));
+        data.put("limit", String.valueOf(MAX_TRACK_COUNT));
         Call<ResponseBody> tracks = service.search(data);
+        Log.i("Request", tracks.request().toString());
         tracks.enqueue(new Callback<ResponseBody>() {
 
             @Override
@@ -46,7 +48,7 @@ public class ITunesService {
                         List<Track> tracks = new ArrayList<>();
                         String responseString = response.body().string().trim();
                         JSONObject object = new JSONObject(responseString);
-                        JSONArray array =   object.getJSONArray("results");
+                        JSONArray array = object.getJSONArray("results");
                         for (int i = 0; i < array.length(); i++) {
                             Track track = new Gson().fromJson(array.getString(i), Track.class);
                             tracks.add(track);
@@ -56,12 +58,15 @@ public class ITunesService {
                         listener.onResponseRecieved(new ResponseListener.Response(true, null));
                         e.printStackTrace();
                     }
+                } else {
+                    listener.onResponseRecieved(new ResponseListener.Response(true, null));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 listener.onResponseRecieved(new ResponseListener.Response(false, null));
+                t.printStackTrace();
             }
         });
     }
