@@ -25,7 +25,7 @@
             android:layout_above="@+id/sliderIndicatorsLayout"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <LinearLayout
+        <com.weavedin.music.app.SliderIndicatorView
             android:id="@+id/sliderIndicatorsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,10 +34,7 @@
             android:gravity="center_horizontal"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal">
-
-
-
-        </LinearLayout>
+        </com.weavedin.music.app.SliderIndicatorView>
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

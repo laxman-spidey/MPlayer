@@ -48,7 +48,7 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
     }
 
 
-    private LinearLayout sliderLayout;
+    private SliderIndicatorView sliderLayout;
     private void setupSlider() {
         sliderLayout = findViewById(R.id.sliderIndicatorsLayout);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -59,15 +59,7 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
 
             @Override
             public void onPageSelected(int position) {
-                int slidesCount = sliderLayout.getChildCount();
-                for (int i=0; i<slidesCount; i++) {
-                    ImageView sliderIndicator = (ImageView) sliderLayout.getChildAt(i);
-                    if (i == position) {
-                        sliderIndicator.setImageResource(R.mipmap.slider_indicator_selected);
-                    } else {
-                        sliderIndicator.setImageResource(R.mipmap.slider_indicator_unselected);
-                    }
-                }
+                sliderLayout.setSelected(position);
             }
 
             @Override
@@ -111,6 +103,8 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
     public void paginateTracks(List<Track> tracks, int visibleCount) {
         Log.i(TAG, "Paginating tracks");
         tracksFragments.clear();
+        mSectionsPagerAdapter.notifyDataSetChanged();
+
         List<List<Track>> trackPages = new ArrayList<>();
         int index = 0;
         List<Track> page = null;
@@ -126,15 +120,10 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         for (List<Track> tracksPage : trackPages) {
             TracksFragment pageFragment = TracksFragment.newInstance(tracksPage);
             tracksFragments.add(pageFragment);
-            addSliderIndicator();
+            sliderLayout.addIndicator();
         }
-        ((ImageView) sliderLayout.getChildAt(0)).setImageResource(R.mipmap.slider_indicator_selected);
+        sliderLayout.setSelected(0);
         mSectionsPagerAdapter.notifyDataSetChanged();
-    }
-
-    private void addSliderIndicator() {
-        ImageView sliderIndicator = (ImageView) LayoutInflater.from(this).inflate(R.layout.slider_indicator, null);
-        sliderLayout.addView(sliderIndicator);
     }
 
     /**
