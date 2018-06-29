@@ -15,7 +15,7 @@ public class HistoryService {
 
     public final static String TAG = HistoryService.class.getSimpleName();
     public final static String HISTORY = "history.xml";
-    public final static String HISTORY_LIST = "history.xml";
+    public final static String HISTORY_LIST = "history";
 
     private static HistoryService instance;
     private Context context;
@@ -40,8 +40,10 @@ public class HistoryService {
         if (historyList == null) {
             historyList = new ArrayList<>();
         }
-        historyList.add(query);
-        setProperty(HISTORY_LIST, new Gson().toJson(historyList));
+        if (!historyList.contains(query)) {
+            historyList.add(query);
+            setProperty(HISTORY_LIST, new Gson().toJson(historyList));
+        }
     }
 
     public List<String> getHistory() {

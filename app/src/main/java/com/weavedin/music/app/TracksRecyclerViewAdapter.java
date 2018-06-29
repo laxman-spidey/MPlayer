@@ -44,6 +44,9 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.setData(mValues.get(position));
+        holder.cardView.setOnClickListener(v -> {
+            mListener.onListFragmentInteraction(holder.mItem);
+        });
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +67,7 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
+        public final View cardView;
         public final ImageView albumArt;
         public final TextView trackName;
         public final TextView artistName;
@@ -76,6 +80,7 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
             super(view);
             mView = view;
 
+            cardView = view.findViewById(R.id.searchCard);
             albumArt = view.findViewById(R.id.albumArt);
             trackName = view.findViewById(R.id.trackName);
             artistName = view.findViewById(R.id.artistName);

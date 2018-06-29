@@ -5,46 +5,42 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.weavedin.music.app.models.Track;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
 public class TracksFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
+    public final static String TAG = TracksFragment.class.getSimpleName();
+
+
+
+    private static final String ARG_TRACKS = "tracks";
     private OnListFragmentInteractionListener mListener;
 
     private List<Track> tracks = new ArrayList<>();
     RecyclerView recyclerView;
     TracksRecyclerViewAdapter adapter;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public TracksFragment() {
+
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static TracksFragment newInstance(int columnCount) {
+    public static TracksFragment newInstance(List<Track> tracks) {
         TracksFragment fragment = new TracksFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putString(ARG_TRACKS, new Gson().toJson(tracks));
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,7 +50,10 @@ public class TracksFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            String tracksString = getArguments().getString(ARG_TRACKS);
+            Type type = new TypeToken<List<Track>>() {
+            }.getType();
+            tracks = new Gson().fromJson(tracksString, type);
         }
     }
 
@@ -86,6 +85,22 @@ public class TracksFragment extends Fragment {
         this.tracks.clear();
         this.tracks.addAll(tracks);
         this.adapter.notifyDataSetChanged();
+
+    }
+
+    public void getVisibleCount(onListRenderCompleted listener) {
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+                int visibleCount = layoutManager.findLastVisibleItemPosition();
+                Log.i(TAG, "visibleCount= " + visibleCount);
+                listener.getVisibleItemCount(visibleCount);
+                recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+
     }
 
     @Override
@@ -99,6 +114,7 @@ public class TracksFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -107,5 +123,9 @@ public class TracksFragment extends Fragment {
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Track item);
+    }
+
+    public interface onListRenderCompleted {
+        void getVisibleItemCount(int visibleCount);
     }
 }

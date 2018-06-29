@@ -28,14 +28,7 @@ public class FavoritesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
-        ImageButton backButton = view.findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> onBackButtonClicked(v));
-
         return view;
-    }
-
-    public void onBackButtonClicked(View view) {
-        getActivity().finish();
     }
 
 

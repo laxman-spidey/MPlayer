@@ -11,6 +11,5 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".TracksFragment"
-
     android:padding="8dp"
     tools:listitem="@layout/track_list_item" />
