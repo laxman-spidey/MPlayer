@@ -2,6 +2,7 @@ package com.weavedin.music.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +10,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.weavedin.music.app.RESTServices.ITunesService;
@@ -17,6 +21,7 @@ import com.weavedin.music.app.sqliteModels.FavoritesService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 public class SearchActivity extends AppCompatActivity implements TracksFragment.OnListFragmentInteractionListener, SearchBarFragment.OnFragmentInteractionListener {
     public final static  String TAG = SearchActivity.class.getSimpleName();
@@ -30,6 +35,7 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
 //        tracksFragment = (TracksFragment) getSupportFragmentManager().findFragmentById(R.id.trackListFragment);
         songsCount = findViewById(R.id.allSongsCount);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), tracksFragments);
@@ -37,7 +43,38 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tracksFragments.add(new TracksFragment());
         mSectionsPagerAdapter.notifyDataSetChanged();
+        setupSlider();
         getTracks("hello");
+    }
+
+
+    private LinearLayout sliderLayout;
+    private void setupSlider() {
+        sliderLayout = findViewById(R.id.sliderIndicatorsLayout);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                int slidesCount = sliderLayout.getChildCount();
+                for (int i=0; i<slidesCount; i++) {
+                    ImageView sliderIndicator = (ImageView) sliderLayout.getChildAt(i);
+                    if (i == position) {
+                        sliderIndicator.setImageResource(R.mipmap.slider_indicator_selected);
+                    } else {
+                        sliderIndicator.setImageResource(R.mipmap.slider_indicator_unselected);
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
 
@@ -89,8 +126,15 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         for (List<Track> tracksPage : trackPages) {
             TracksFragment pageFragment = TracksFragment.newInstance(tracksPage);
             tracksFragments.add(pageFragment);
+            addSliderIndicator();
         }
+        ((ImageView) sliderLayout.getChildAt(0)).setImageResource(R.mipmap.slider_indicator_selected);
         mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
+    private void addSliderIndicator() {
+        ImageView sliderIndicator = (ImageView) LayoutInflater.from(this).inflate(R.layout.slider_indicator, null);
+        sliderLayout.addView(sliderIndicator);
     }
 
     /**
