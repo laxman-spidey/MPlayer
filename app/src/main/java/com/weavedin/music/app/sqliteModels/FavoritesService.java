@@ -38,7 +38,6 @@ public class FavoritesService {
         SQLiteDatabase db = helper.getWritableDatabase();
         long id = db.insert(TracksDBHelper.TABLE_NAME, null, TrackModel.getInsertable(track));
         db.close();
-        Toast.makeText(getContext(), "Inserted", Toast.LENGTH_SHORT).show();
         return id;
     }
 

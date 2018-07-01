@@ -38,6 +38,20 @@ public class MusicPlayer {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
         return minutes + ":" + seconds;
     }
+    public String getRemainingDuration() {
+
+        if (mediaPlayer.isPlaying()) {
+            long totalDuration = mediaPlayer.getDuration();
+            long current = mediaPlayer.getCurrentPosition();
+            long remaining = totalDuration - current;
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(remaining);
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(remaining);
+            return "-"+minutes + ":" + seconds;
+        }
+        else {
+            return "00:00";
+        }
+    }
 
     public void setOnBufferingUpdateListener() {
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> Log.i(TAG, "buffering - " + percent));

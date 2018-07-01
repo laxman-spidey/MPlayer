@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.weavedin.music.app.RESTServices.ITunesService;
 import com.weavedin.music.app.RESTServices.ItunesVolleyService;
 import com.weavedin.music.app.models.Track;
 
@@ -69,7 +72,7 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
     public void onListFragmentInteraction(Track item) {
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.putExtra(PlayerActivity.TAG_TRACK, item.toString());
-        for(TracksFragment fragment : tracksFragments) {
+        for (TracksFragment fragment : tracksFragments) {
             if (fragment.adapter != null) {
                 fragment.adapter.notifyDataSetChanged();
             }
@@ -83,10 +86,13 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
     }
 
     TracksFragment firstFragment;
+
     public void getTracks(String query) {
+
+        mViewPager.setCurrentItem(0);
         firstFragment = tracksFragments.get(0);
         firstFragment.inProgress();
-        ItunesVolleyService.getInstance(getContext()).search(query, response -> {
+        ITunesService.search(query, response -> {
             if (response.isOkay) {
                 List<Track> result = (List<Track>) response.data;
                 if (result != null && result.size() > 0) {
@@ -107,8 +113,17 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         });
     }
 
+    public void removeAllFragments() {
+        //skip first fragment
+
+        for (int i = tracksFragments.size()-1; i > 0; i--) {
+            mSectionsPagerAdapter.removeFragment(i, mViewPager);
+        }
+    }
 
     public void paginateTracks(List<Track> tracks, int visibleCount) {
+
+        removeAllFragments();
         List<List<Track>> trackPages = new ArrayList<>();
         int index = 0;
         List<Track> page = null;
@@ -120,6 +135,7 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
             page.add(track);
             index++;
         }
+
 
         sliderLayout.clearIndicators();
         firstFragment.setTracks(trackPages.get(0));
@@ -155,9 +171,23 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
 
         @Override
         public int getCount() {
-
+            Log.i(TAG, "fragments count --- " + mFragmentList.size());
             return mFragmentList.size();
         }
+
+
+        public void removeFragment(TracksFragment fragment) {
+
+            mFragmentList.remove(fragment);
+            notifyDataSetChanged();
+        }
+
+        public void removeFragment(int position, ViewGroup container) {
+            super.destroyItem(null, position, mFragmentList.get(position));
+            mFragmentList.remove(position);
+            notifyDataSetChanged();
+        }
+
 
     }
 

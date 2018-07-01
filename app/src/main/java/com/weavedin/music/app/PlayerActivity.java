@@ -65,6 +65,7 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 seekBar.setProgress(MusicPlayer.getInstance().getCurrentPosition());
+                trackEndTime.setText(MusicPlayer.getInstance().getRemainingDuration());
                 mHandler.postDelayed(this, 1000);
             }
         });
