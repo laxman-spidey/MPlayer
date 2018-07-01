@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">iMusic</string>
+    <string name="app_name">MPlayer</string>
     <string name="action_settings">Settings</string>
     <string name="search_caption">Listen to your favorite\n songs from Youtube</string>
     <string name="search_text">Search Music Title, Artist, Movie etc.</string>

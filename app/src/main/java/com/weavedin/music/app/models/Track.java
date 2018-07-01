@@ -18,4 +18,6 @@ public class Track {
     public String toString() {
         return new Gson().toJson(this);
     }
+
+    public static Track selectedTrack;
 }

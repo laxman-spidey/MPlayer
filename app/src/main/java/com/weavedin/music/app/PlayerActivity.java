@@ -2,17 +2,13 @@ package com.weavedin.music.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -20,16 +16,12 @@ import com.google.gson.Gson;
 import com.weavedin.music.app.models.Track;
 import com.weavedin.music.app.sqliteModels.FavoritesService;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
 public class PlayerActivity extends AppCompatActivity {
 
     public final static String TAG = PlayerActivity.class.getSimpleName();
     public final static String TAG_TRACK = "TRACK";
 
     Track track;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,44 +31,32 @@ public class PlayerActivity extends AppCompatActivity {
         setupToolbar();
         setAlbumArt();
         setTrackInfo();
-        setupOtherController();
-        try {
-            setupMediaPlayer();
-            setupPlayerControls();
-            setupSeekBar();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setupFavoritesButton();
+        setupMediaPlayer();
+        setupPlayerControls();
+        setupPlaylistButton();
+        setupSeekBar();
+
 
     }
 
     private void getTrackFromIntent() {
         String trackJson = getIntent().getStringExtra(TAG_TRACK);
         track = new Gson().fromJson(trackJson, Track.class);
+        Track.selectedTrack = track;
     }
 
 
-
-    MediaPlayer mediaPlayer;
-    private long duration;
-    private void setupMediaPlayer() throws IOException {
-
-
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setDataSource(track.previewUrl);
-        mediaPlayer.prepare(); // might take long! (for buffering, etc)
-        mediaPlayer.start();
-        mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> Log.i(TAG, "buffering - "+percent));
-        duration = mediaPlayer.getDuration();
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
-        trackEndTime.setText(minutes+":"+seconds);
-
-
+    private void setupMediaPlayer() {
+        MusicPlayer.getInstance().startPlaying(track);
+        MusicPlayer.getInstance().setOnPreparedListener(mp -> {
+            MusicPlayer.getInstance().start();
+            trackEndTime.setText(MusicPlayer.getInstance().getDuration());
+        });
     }
 
     SeekBar seekBar;
+
     private void setupSeekBar() {
         seekBar = findViewById(R.id.seekBar);
         Handler mHandler = new Handler();
@@ -84,16 +64,12 @@ public class PlayerActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(mediaPlayer != null){
-                    int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
-                    seekBar.setProgress(mCurrentPosition);
-                }
+                seekBar.setProgress(MusicPlayer.getInstance().getCurrentPosition());
                 mHandler.postDelayed(this, 1000);
             }
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
@@ -106,14 +82,10 @@ public class PlayerActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mediaPlayer != null && fromUser){
-                    mediaPlayer.seekTo(progress * 1000);
-
-                }
+                MusicPlayer.getInstance().seekTo(progress, fromUser);
             }
         });
     }
-
 
 
     ImageView albumArt;
@@ -160,19 +132,19 @@ public class PlayerActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         favoritesButton = findViewById(R.id.favoritesIcon);
-        favoritesButton.setOnClickListener(v-> startActivity(new Intent(getContext(), FavoritesActivity.class)));
+        favoritesButton.setOnClickListener(v -> startActivity(new Intent(getContext(), FavoritesActivity.class)));
     }
 
     private ImageButton playPauseButton;
 
     private void setupPlayerControls() {
         playPauseButton = findViewById(R.id.playPauseButton);
-        playPauseButton.setOnClickListener(v->{
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
+        playPauseButton.setOnClickListener(v -> {
+            if (MusicPlayer.getInstance().isPlaying()) {
+                MusicPlayer.getInstance().pause();
                 playPauseButton.setImageResource(R.mipmap.play);
             } else {
-                mediaPlayer.start();
+                MusicPlayer.getInstance().start();
                 playPauseButton.setImageResource(R.mipmap.pause);
             }
         });
@@ -180,11 +152,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private boolean isFavorite;
-    private void setupOtherController() {
-        ImageButton toggleFavouriteButton= findViewById(R.id.toggleFavouriteButton);
+    private ImageButton toggleFavouriteButton;
+    private void setupFavoritesButton() {
+        toggleFavouriteButton = findViewById(R.id.toggleFavouriteButton);
         isFavorite = FavoritesService.getInstance(getContext()).isFavorite(track);
 
-        setFavoriteImage(isFavorite, toggleFavouriteButton);
+        setFavoriteImage(isFavorite);
         toggleFavouriteButton.setOnClickListener((view) -> {
             isFavorite = !isFavorite;
             if (isFavorite) {
@@ -192,16 +165,31 @@ public class PlayerActivity extends AppCompatActivity {
             } else {
                 FavoritesService.getInstance(getContext()).delete(track);
             }
-            setFavoriteImage(isFavorite, toggleFavouriteButton);
+            setFavoriteImage(isFavorite);
         });
     }
 
-    private void setFavoriteImage(boolean isFavorite, ImageButton toggleButton) {
+    private void setFavoriteImage(boolean isFavorite) {
         if (isFavorite) {
-            toggleButton.setImageResource(R.drawable.ic_favorite_selected);
+            toggleFavouriteButton.setImageResource(R.drawable.ic_favorite_selected);
         } else {
-            toggleButton.setImageResource(R.drawable.ic_favorite_unselected);
+            toggleFavouriteButton.setImageResource(R.drawable.ic_favorite_unselected);
         }
+    }
+
+    private void setupPlaylistButton() {
+        ImageButton playlistButton = findViewById(R.id.playListButton);
+        playlistButton.setOnClickListener(v-> {
+            finish();
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isFavorite = FavoritesService.getInstance(getContext()).isFavorite(track);
+        setFavoriteImage(isFavorite);
     }
 
     private Context getContext() {

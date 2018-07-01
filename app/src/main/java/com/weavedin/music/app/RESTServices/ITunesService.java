@@ -53,6 +53,9 @@ public class ITunesService {
                             Track track = new Gson().fromJson(array.getString(i), Track.class);
                             tracks.add(track);
                         }
+                        for (Track track: tracks) {
+                            Log.i("tag", track.trackId);
+                        }
                         listener.onResponseRecieved(new ResponseListener.Response(true, tracks));
                     } catch (Exception e) {
                         listener.onResponseRecieved(new ResponseListener.Response(true, null));
@@ -65,8 +68,9 @@ public class ITunesService {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                listener.onResponseRecieved(new ResponseListener.Response(false, null));
+                listener.onResponseRecieved(new ResponseListener.Response(false, t.getMessage()));
                 t.printStackTrace();
+
             }
         });
     }

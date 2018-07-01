@@ -17,16 +17,17 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
+    buildToolsVersion '27.0.3'
 }
 ext {
     supportLibVersion = "27.1.1"
     googleLibraryVersion = "15.0.1"
 }
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
@@ -41,6 +42,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
-
+    implementation 'com.android.volley:volley:1.0.0'
 
 }

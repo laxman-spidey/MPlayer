@@ -12,6 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 public class BaseFragment extends Fragment {
     public static String TAG = BaseFragment.class.getSimpleName();
     RelativeLayout layoutContainer;
@@ -63,7 +65,7 @@ public class BaseFragment extends Fragment {
     public void setSuccessView(View view)
     {
         successView = view;
-        layoutContainer.addView(successView);
+        layoutContainer.addView(successView, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
     }
 
     public void onError() {
@@ -73,6 +75,11 @@ public class BaseFragment extends Fragment {
         noDataView.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
         initView.setVisibility(View.GONE);
+    }
+    public void onError(String errorMsg) {
+        TextView error = errorView.findViewById(R.id.networkErrorText);
+        error.setText(errorMsg);
+        onError();
     }
 
     public void onSuccess() {

@@ -40,4 +40,8 @@ public class SliderIndicatorView extends LinearLayout{
             }
         }
     }
+
+    public void clearIndicators() {
+        this.removeAllViews();
+    }
 }

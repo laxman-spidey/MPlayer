@@ -2,7 +2,6 @@ package com.weavedin.music.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,21 +9,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.weavedin.music.app.RESTServices.ITunesService;
+import com.weavedin.music.app.RESTServices.ItunesVolleyService;
 import com.weavedin.music.app.models.Track;
-import com.weavedin.music.app.sqliteModels.FavoritesService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 public class SearchActivity extends AppCompatActivity implements TracksFragment.OnListFragmentInteractionListener, SearchBarFragment.OnFragmentInteractionListener {
-    public final static  String TAG = SearchActivity.class.getSimpleName();
+    public final static String TAG = SearchActivity.class.getSimpleName();
     TextView songsCount;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -44,11 +38,12 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         tracksFragments.add(new TracksFragment());
         mSectionsPagerAdapter.notifyDataSetChanged();
         setupSlider();
-        getTracks("hello");
+//        getTracks("hello");
     }
 
 
     private SliderIndicatorView sliderLayout;
+
     private void setupSlider() {
         sliderLayout = findViewById(R.id.sliderIndicatorsLayout);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -72,9 +67,13 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
 
     @Override
     public void onListFragmentInteraction(Track item) {
-//        FavoritesService.getInstance(getContext()).insert(item);
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.putExtra(PlayerActivity.TAG_TRACK, item.toString());
+        for(TracksFragment fragment : tracksFragments) {
+            if (fragment.adapter != null) {
+                fragment.adapter.notifyDataSetChanged();
+            }
+        }
         startActivity(intent);
     }
 
@@ -83,17 +82,26 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
         getTracks(query);
     }
 
+    TracksFragment firstFragment;
     public void getTracks(String query) {
-        ITunesService.search(query, response -> {
+        firstFragment = tracksFragments.get(0);
+        firstFragment.inProgress();
+        ItunesVolleyService.getInstance(getContext()).search(query, response -> {
             if (response.isOkay) {
                 List<Track> result = (List<Track>) response.data;
                 if (result != null && result.size() > 0) {
                     songsCount.setText("" + result.size());
-                    tracksFragments.get(0).setTracks(result);
-                    tracksFragments.get(0).getVisibleCount(visibleCount -> {
+                    firstFragment.onSuccess();
+                    firstFragment.setTracks(result);
+                    firstFragment.getVisibleCount(visibleCount -> {
                         paginateTracks(result, visibleCount);
                     });
-
+                }
+            } else {
+                if (response.data == null) {
+                    firstFragment.onError();
+                } else {
+                    firstFragment.onError((String) response.data);
                 }
             }
         });
@@ -101,15 +109,11 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
 
 
     public void paginateTracks(List<Track> tracks, int visibleCount) {
-        Log.i(TAG, "Paginating tracks");
-        tracksFragments.clear();
-        mSectionsPagerAdapter.notifyDataSetChanged();
-
         List<List<Track>> trackPages = new ArrayList<>();
         int index = 0;
         List<Track> page = null;
-        for (Track  track : tracks) {
-            if (index == 0 ||  index % visibleCount== 0) {
+        for (Track track : tracks) {
+            if (index == 0 || index % visibleCount == 0) {
                 page = new ArrayList<>();
                 trackPages.add(page);
             }
@@ -117,6 +121,9 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
             index++;
         }
 
+        sliderLayout.clearIndicators();
+        firstFragment.setTracks(trackPages.get(0));
+        trackPages.remove(0);
         for (List<Track> tracksPage : trackPages) {
             TracksFragment pageFragment = TracksFragment.newInstance(tracksPage);
             tracksFragments.add(pageFragment);
@@ -148,12 +155,10 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
 
         @Override
         public int getCount() {
+
             return mFragmentList.size();
         }
 
-        public void addFrag(TracksFragment fragment) {
-            mFragmentList.add(fragment);
-        }
     }
 
     public Context getContext() {

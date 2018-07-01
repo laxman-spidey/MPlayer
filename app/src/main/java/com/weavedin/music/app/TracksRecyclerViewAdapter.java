@@ -1,6 +1,7 @@
 package com.weavedin.music.app;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.weavedin.music.app.TracksFragment.OnListFragmentInteractionListener;
 import com.weavedin.music.app.dummy.DummyContent.DummyItem;
 import com.weavedin.music.app.models.Track;
@@ -22,6 +24,8 @@ import java.util.List;
  * TODO: Replace the implementation with code for your data type.
  */
 public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecyclerViewAdapter.ViewHolder> {
+
+    public final static String TAG = TracksRecyclerViewAdapter.class.getSimpleName();
 
     private final List<Track> mValues;
     private final OnListFragmentInteractionListener mListener;
@@ -44,30 +48,17 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.setData(mValues.get(position));
-        holder.cardView.setOnClickListener(v -> {
-            mListener.onListFragmentInteraction(holder.mItem);
-        });
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
-            }
-        });
+
     }
 
     @Override
     public int getItemCount() {
-        Log.i("TAG", "track size - " + mValues.size());
         return mValues.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final View cardView;
+        public final CardView cardView;
         public final ImageView albumArt;
         public final TextView trackName;
         public final TextView artistName;
@@ -94,15 +85,27 @@ public class TracksRecyclerViewAdapter extends RecyclerView.Adapter<TracksRecycl
             artistName.setText(track.artistName);
             Glide.with(getContext())
                     .load(track.artworkUrl60)
-//                    .centerCrop()
-//                    .placeholder(R.drawable.loading_spinner)
+                    .apply(new RequestOptions().centerCrop())
                     .into(albumArt);
-
+            cardView.setOnClickListener(v -> {
+                mListener.onListFragmentInteraction(track);
+                Track.selectedTrack = track;
+                notifyDataSetChanged();
+            });
+            setSelected(track);
         }
-//        @Override
-//        public String toString() {
-//            return super.toString() + " '" + mContentView.getText() + "'";
-//        }
+
+        public void setSelected(Track track) {
+            if (Track.selectedTrack != null) {
+                Log.i(TAG, "selected id - " + Track.selectedTrack.trackId + " = " + track.trackId);
+                if (Track.selectedTrack.trackId.equals(track.trackId)) {
+                    Log.i(TAG, "Matched ---- selected id - " + Track.selectedTrack.trackId + " = " + track.trackId);
+                    cardView.setCardBackgroundColor(getContext().getResources().getColor(R.color.colorPrimary));
+                } else {
+                    cardView.setCardBackgroundColor(getContext().getResources().getColor(R.color.white));
+                }
+            }
+        }
     }
 
     public Context getContext() {

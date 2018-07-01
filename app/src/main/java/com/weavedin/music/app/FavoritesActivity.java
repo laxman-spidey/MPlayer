@@ -1,6 +1,7 @@
 package com.weavedin.music.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,10 +31,11 @@ public class FavoritesActivity extends AppCompatActivity implements TracksFragme
     }
 
     public void getFavorites() {
+
         List<Track> tracks = FavoritesService.getInstance(getContext()).getFavorites();
         TracksFragment fragment = (TracksFragment) getSupportFragmentManager().findFragmentById(R.id.favoritesListFragment);
         fragment.setTracks(tracks);
-
+        fragment.setSwipeToDelete();
     }
 
     private Context getContext() {
@@ -42,6 +44,9 @@ public class FavoritesActivity extends AppCompatActivity implements TracksFragme
 
     @Override
     public void onListFragmentInteraction(Track item) {
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putExtra(PlayerActivity.TAG_TRACK, item.toString());
+        startActivity(intent);
 
     }
 }
