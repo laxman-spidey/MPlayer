@@ -36,6 +36,7 @@
                         android:layout_alignParentLeft="true"
                         android:background="@android:color/transparent"
                         android:gravity="center_vertical"
+                        android:paddingRight="16dp"
                         android:src="@mipmap/arrow_back" />
 
                     <TextView
@@ -56,6 +57,7 @@
                         android:layout_height="match_parent"
                         android:layout_alignParentRight="true"
                         android:clickable="true"
+                        android:paddingLeft="16dp"
                         android:gravity="center_vertical"
                         android:src="@mipmap/favorite" />
                 </RelativeLayout>

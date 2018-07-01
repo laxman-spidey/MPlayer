@@ -103,6 +103,9 @@ public class SearchActivity extends AppCompatActivity implements TracksFragment.
                         paginateTracks(result, visibleCount);
                     });
                 }
+                else {
+                    firstFragment.onNoDataFound();
+                }
             } else {
                 if (response.data == null) {
                     firstFragment.onError();
